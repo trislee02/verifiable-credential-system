@@ -1,14 +1,31 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import { dataStore } from "./redux/dataStore";
+import { Provider } from "react-redux";
+import { BrowserRouter, Routes, Route } from "react-router-dom"; 
+import Login from "./components/Login/Login";
+import Register from "./components/Register/Register";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+    <Provider store={dataStore}>
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={ <App />} />
+                <Route path="auth">
+                    <Route path="login" element={ <Login /> } />
+                    <Route path="register" element={ <Register /> } />
+                </Route>
+            </Routes>
+        </BrowserRouter>
+    </Provider>
 );
 
 // If you want to start measuring performance in your app, pass a function
