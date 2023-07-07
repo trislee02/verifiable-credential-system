@@ -1,0 +1,16 @@
+{
+  "name": "verifiable-credential-system",
+  "version": "1.0.0",
+  "description": "A lightweight Verifiable Credential System",
+  "scripts": {
+    "server": "cd server && nodemon index.js",
+    "client": "npm run start --prefix client",
+    "start": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^8.2.0",
+    "nodemon": "^2.0.22"
+  }
+}
