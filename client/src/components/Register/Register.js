@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -20,37 +20,39 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 const defaultTheme = createTheme();
 
 const Register = () => {
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [passwordConfirm, setPasswordConfirm] = useState("");
     const [accountType, setAccountType] = useState("personal");
-    const nameRef = useRef();
-    const emailRef = useRef();
+    const [publicKey, setPublicKey] = useState("");
 
     const [emailValidate, setEmailValidate] = useState({ error: false, helperText: "" });
     const [nameValidate, setNameValidate] = useState({ error: false, helperText: "" });
-
-    const handleAccountTypeChange = (event) => {
-        setAccountType(event.target.value);
-    };
+    const [passwordValidate, setPasswordValidate] = useState({ error: false, helperText: "" });
+    const [passwordConfirmValidate, setPasswordConfirmValidate] = useState({ error: false, helperText: "" });
+    const [publicKeyValidate, setPublicKeyValidate] = useState({ error: false, helperText: "" });
 
     const validateName = (name) => {
         if (!name || name.trim().length === 0) {
             setNameValidate({
                 error: true,
-                helperText: "Name is required!"
+                helperText: "Name is required!",
             });
             return false;
         }
         setNameValidate({
-            error: true,
-            helperText: ""
+            error: false,
+            helperText: "",
         });
         return true;
-    }
+    };
 
     const validateEmail = (email) => {
         if (!email || email.trim().length === 0) {
             setEmailValidate({
                 error: true,
-                helperText: "Email Address is required!"
+                helperText: "Email Address is required!",
             });
             return false;
         }
@@ -58,47 +60,89 @@ const Register = () => {
         if (!/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(email)) {
             setEmailValidate({
                 error: true,
-                helperText: "Invalid email address!"
+                helperText: "Invalid email address!",
             });
             return false;
         }
 
         setEmailValidate({
             error: false,
-            helperText: ""
+            helperText: "",
         });
 
+        return true;
+    };
+
+    const validatePassword = (password) => {
+        if (!password || password.trim().length === 0) {
+            setPasswordValidate({
+                error: true,
+                helperText: "Password is required!",
+            });
+            return false;
+        }
+        if (!/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/.test(password)) {
+            setPasswordValidate({
+                error: true,
+                helperText: "Password must contain at least one  number and one uppercase and lowercase letter, and at least 8 or more characters!",
+            });
+            return false;
+        }
+        setPasswordValidate({
+            error: false,
+            helperText: "",
+        });
+        return true;
+    };
+
+    const validatePasswordConfirm = (input) => {
+        if (!input || input.trim().length === 0 || input.trim() !== password.trim()) {
+            setPasswordConfirmValidate({
+                error: true,
+                helperText: "Password not match!",
+            });
+            return false;
+        }
+        setPasswordConfirmValidate({
+            error: false,
+            helperText: "",
+        });
+        return true;
+    };
+
+    const validatePublicKey = (input) => {
+        if (!input || input.trim().length === 0) {
+            setPublicKeyValidate({
+                error: true,
+                helperText: "Public Key is required!"
+            });
+            return false;
+        }
+        setPublicKeyValidate({
+            error: false,
+            helperText: ""
+        });
         return true;
     }
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        const data = new FormData(event.currentTarget);
-        const name = nameRef.current.value;
-        const email = emailRef.current.value;
 
-        if (!validateName(name)) return;
-        if (!validateEmail(email)) return;
-           
-        console.log({
-            email: data.get("email"),
-            password: data.get("password"),
-            accountType: data.get("account-type"),
-            publicKey: data.get("publickey")
-        });
+        const validName = validateName(name);
+        const validEmail = validateEmail(email);
+        const validPassword = validatePassword(password) && validatePasswordConfirm(passwordConfirm);
+        const validPublicKey = validatePublicKey(publicKey);
+
+        if (!(validName && validEmail && validPassword && validPublicKey)) return;
+
+        console.log({ name, email, password, passwordConfirm, accountType, publicKey });
     };
 
     return (
         <ThemeProvider theme={defaultTheme}>
             <Container component="main" maxWidth="xs">
                 <CssBaseline />
-                <Box
-                    sx={{
-                        marginTop: 8,
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                    }}>
+                <Box sx={{ marginTop: 8, display: "flex", flexDirection: "column", alignItems: "center" }}>
                     <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
                         <LockOutlinedIcon />
                     </Avatar>
@@ -108,27 +152,49 @@ const Register = () => {
                     <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
                         <Grid container spacing={2}>
                             <Grid item xs={12}>
-                                { !nameValidate.error && <TextField ref={nameRef} autoComplete="full-name" name="name" required fullWidth id="name" label="Name" autoFocus />}
-                                { nameValidate.error && <TextField ref={nameRef} error helperText={nameValidate.helperText} autoComplete="full-name" name="name" required fullWidth id="name" label="Name" autoFocus />}
+                                <TextField value={name} onChange={(event) => setName(event.target.value)} 
+                                    onBlur={(event) => validateName(event.target.value)} 
+                                    onKeyUp={(event) => validateName(event.target.value)} 
+                                    error={nameValidate.error} helperText={nameValidate.helperText} 
+                                    autoComplete="full-name" name="name" required fullWidth id="name" 
+                                    label="Name" autoFocus />
                             </Grid>
                             <Grid item xs={12}>
-                                { !emailValidate.error && <TextField ref={emailRef} required fullWidth id="email" label="Email Address" name="email" autoComplete="email" />}
-                                { emailValidate.error && <TextField ref={emailRef} required error helperText={emailValidate.helperText} fullWidth id="email" label="Email Address" name="email" autoComplete="email" />}
+                                <TextField value={email} onChange={(event) => setEmail(event.target.value)} 
+                                    onBlur={(event) => validateEmail(event.target.value)} 
+                                    onKeyUp={(event) => validateEmail(event.target.value)} 
+                                    error={emailValidate.error} helperText={emailValidate.helperText} 
+                                    required fullWidth id="email" label="Email Address" name="email" 
+                                    autoComplete="email" />
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField required fullWidth name="password" label="Password" type="password" id="password" autoComplete="new-password" />
+                                <TextField value={password} onChange={(event) => setPassword(event.target.value)} 
+                                    onBlur={(event) => validatePassword(event.target.value)}
+                                    onKeyUp={(event) => validatePassword(event.target.value)} 
+                                    error={passwordValidate.error} helperText={passwordValidate.helperText} 
+                                    required fullWidth name="password" label="Password" type="password" id="password" 
+                                    autoComplete="new-password" />
                             </Grid>
                             <Grid item xs={12}>
-                                <FormControl sx={{ minWidth: 80 }} fullWidth required>
-                                    <InputLabel id="account-type-label">Account Type</InputLabel>
-                                    <Select labelId="account-type-label" name="account-type" id="account-type" value={accountType} onChange={handleAccountTypeChange} label="Account Type" required>
-                                        <MenuItem value="personal">Personal Account</MenuItem>
-                                        <MenuItem value="business">Business Account</MenuItem>
-                                    </Select>
-                                </FormControl>
+                                <TextField value={passwordConfirm} onChange={(event) => setPasswordConfirm(event.target.value)} 
+                                onBlur={(event) => validatePasswordConfirm(event.target.value)} 
+                                onKeyUp={(event) => validatePasswordConfirm(event.target.value)} 
+                                error={passwordConfirmValidate.error} helperText={passwordConfirmValidate.helperText} 
+                                required fullWidth name="passwordConfirm" label="Confirm Password" type="password" 
+                                id="passwordConfirm" />
                             </Grid>
                             <Grid item xs={12}>
-                                <TextField name="publickey" required fullWidth id="publickey" label="Public Key" />
+                                <TextField id="account-type-select" select label="Account Type" value={accountType} onChange={(event) => setAccountType(event.target.value)} fullWidth>
+                                    <MenuItem value="personal"> Personal Account</MenuItem>
+                                    <MenuItem value="business"> Business Account</MenuItem>
+                                </TextField>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField value={publicKey} onChange={event => setPublicKey(event.target.value)} 
+                                onBlur={event => validatePublicKey(event.target.value)}
+                                onKeyUp={event => validatePublicKey(event.target.value)}
+                                error={publicKeyValidate.error} helperText={publicKeyValidate.helperText}
+                                name="publickey" required fullWidth id="publickey" label="Public Key" />
                             </Grid>
                         </Grid>
                         <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
