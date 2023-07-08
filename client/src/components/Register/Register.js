@@ -9,29 +9,37 @@ import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
-import FormControl from "@mui/material/FormControl";
+import CircularProgress from '@mui/material/CircularProgress';
+import { Alert, AlertTitle } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import useFetch from "../../hooks/useFetch";
+import apiConstants from "../../constants/api";
 
 // TODO remove, this demo shouldn't need to reset the theme.
 
 const defaultTheme = createTheme();
 
 const Register = () => {
+    const DEFAULT_ACCOUNT_TYPE = "indi";
+
     const [name, setName] = useState("");
+    const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [passwordConfirm, setPasswordConfirm] = useState("");
-    const [accountType, setAccountType] = useState("personal");
+    const [type, setType] = useState(DEFAULT_ACCOUNT_TYPE);
     const [publicKey, setPublicKey] = useState("");
 
     const [emailValidate, setEmailValidate] = useState({ error: false, helperText: "" });
+    const [usernameValidate, setUsernameValidate] = useState({ error: false, helperText: "" });
     const [nameValidate, setNameValidate] = useState({ error: false, helperText: "" });
     const [passwordValidate, setPasswordValidate] = useState({ error: false, helperText: "" });
     const [passwordConfirmValidate, setPasswordConfirmValidate] = useState({ error: false, helperText: "" });
     const [publicKeyValidate, setPublicKeyValidate] = useState({ error: false, helperText: "" });
+
+    const [registerSuccess, setRegisterSuccess] = useState(false);
+    const [register, registering, registerError] = useFetch();
 
     const validateName = (name) => {
         if (!name || name.trim().length === 0) {
@@ -72,6 +80,21 @@ const Register = () => {
 
         return true;
     };
+    
+    const validateUsername = (username) => {
+        if (!username || username.trim().length === 0) {
+            setUsernameValidate({
+                error: true,
+                helperText: "Username is required!",
+            });
+            return false;
+        }
+        setUsernameValidate({
+            error: false,
+            helperText: "",
+        });
+        return true;
+    }
 
     const validatePassword = (password) => {
         if (!password || password.trim().length === 0) {
@@ -125,24 +148,36 @@ const Register = () => {
         return true;
     }
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
         const validName = validateName(name);
+        const validUsername = validateUsername(username);
         const validEmail = validateEmail(email);
         const validPassword = validatePassword(password) && validatePasswordConfirm(passwordConfirm);
         const validPublicKey = validatePublicKey(publicKey);
 
-        if (!(validName && validEmail && validPassword && validPublicKey)) return;
+        if (!(validName && validUsername && validEmail && validPassword && validPublicKey)) return;
 
-        console.log({ name, email, password, passwordConfirm, accountType, publicKey });
+        const requestBody = { name, username, email, password, type, publicKey };
+
+        // Send API request
+        await register(`${apiConstants.BASE_API_URL}/api/auth/local/register`, {
+            method: "POST",
+            body: JSON.stringify(requestBody),
+            headers: {
+                "Content-Type": "application/json",
+            }
+        });
+
+        if (!registerError) setRegisterSuccess(true);
     };
 
     return (
         <ThemeProvider theme={defaultTheme}>
-            <Container component="main" maxWidth="xs">
+            <Container component="main" maxWidth="sm">
                 <CssBaseline />
-                <Box sx={{ marginTop: 8, display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <Box sx={{ marginTop: 8, marginBottom: 8, display: "flex", flexDirection: "column", alignItems: "center" }}>
                     <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
                         <LockOutlinedIcon />
                     </Avatar>
@@ -157,9 +192,17 @@ const Register = () => {
                                     onKeyUp={(event) => validateName(event.target.value)} 
                                     error={nameValidate.error} helperText={nameValidate.helperText} 
                                     autoComplete="full-name" name="name" required fullWidth id="name" 
-                                    label="Name" autoFocus />
+                                    label="Name" />
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid item xs={12} lg={6}>
+                                <TextField value={username} onChange={(event) => setUsername(event.target.value)} 
+                                    onBlur={(event) => validateUsername(event.target.value)} 
+                                    onKeyUp={(event) => validateUsername(event.target.value)} 
+                                    error={usernameValidate.error} helperText={usernameValidate.helperText} 
+                                    name="username" required fullWidth id="username" 
+                                    label="Username" />
+                            </Grid>
+                            <Grid item xs={12} lg={6}>
                                 <TextField value={email} onChange={(event) => setEmail(event.target.value)} 
                                     onBlur={(event) => validateEmail(event.target.value)} 
                                     onKeyUp={(event) => validateEmail(event.target.value)} 
@@ -167,7 +210,7 @@ const Register = () => {
                                     required fullWidth id="email" label="Email Address" name="email" 
                                     autoComplete="email" />
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid item xs={12} lg={6}>
                                 <TextField value={password} onChange={(event) => setPassword(event.target.value)} 
                                     onBlur={(event) => validatePassword(event.target.value)}
                                     onKeyUp={(event) => validatePassword(event.target.value)} 
@@ -175,7 +218,7 @@ const Register = () => {
                                     required fullWidth name="password" label="Password" type="password" id="password" 
                                     autoComplete="new-password" />
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid item xs={12} lg={6}>
                                 <TextField value={passwordConfirm} onChange={(event) => setPasswordConfirm(event.target.value)} 
                                 onBlur={(event) => validatePasswordConfirm(event.target.value)} 
                                 onKeyUp={(event) => validatePasswordConfirm(event.target.value)} 
@@ -183,13 +226,13 @@ const Register = () => {
                                 required fullWidth name="passwordConfirm" label="Confirm Password" type="password" 
                                 id="passwordConfirm" />
                             </Grid>
-                            <Grid item xs={12}>
-                                <TextField id="account-type-select" select label="Account Type" value={accountType} onChange={(event) => setAccountType(event.target.value)} fullWidth>
-                                    <MenuItem value="personal"> Personal Account</MenuItem>
-                                    <MenuItem value="business"> Business Account</MenuItem>
+                            <Grid item xs={12} lg={6}>
+                                <TextField id="account-type-select" select label="Account Type" value={type} onChange={(event) => setType(event.target.value)} fullWidth>
+                                    <MenuItem value="indi"> Individual</MenuItem>
+                                    <MenuItem value="org"> Organization</MenuItem>
                                 </TextField>
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid item xs={12} lg={6}>
                                 <TextField value={publicKey} onChange={event => setPublicKey(event.target.value)} 
                                 onBlur={event => validatePublicKey(event.target.value)}
                                 onKeyUp={event => validatePublicKey(event.target.value)}
@@ -197,8 +240,23 @@ const Register = () => {
                                 name="publickey" required fullWidth id="publickey" label="Public Key" />
                             </Grid>
                         </Grid>
-                        <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-                            Sign Up
+                        { 
+                            registerError && 
+                            <Alert severity="error" sx={{ mt: 3 }}>
+                                <AlertTitle>Register Failed!</AlertTitle>
+                                {registerError}
+                            </Alert>
+                        }
+                        {
+                            (!registerError && registerSuccess) &&
+                            <Alert severity="success" sx={{ mt: 3 }}>
+                                <AlertTitle>Registered Successfully!</AlertTitle>
+                                Your account has been successfully created — <strong><a href="/auth/login">Login now!</a></strong>
+                            </Alert>
+                        }
+                        <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2, padding: 1.5 }}>
+                            { !registering && "Sign up"}
+                            { registering && <CircularProgress color="inherit" /> }
                         </Button>
                         <Grid container justifyContent="flex-end">
                             <Grid item>
