@@ -3,8 +3,6 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
@@ -64,8 +62,6 @@ const Login = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        const data = new FormData(event.currentTarget);
-        const rememberAccount = data.get("rememberMe");
 
         // Validate inputs
         const validIdentifier = validateIdentifier(identifier);
@@ -85,10 +81,8 @@ const Login = () => {
         setLoginSuccess(true);
 
         dispatch(authActions.login(loginResponse));
-        if (rememberAccount) {
-            localStorage.setItem("token", loginResponse.jwt);
-            localStorage.setItem("user", loginResponse.user);
-        }
+        localStorage.setItem("token", loginResponse.jwt);
+        localStorage.setItem("user", JSON.stringify(loginResponse.user));
 
         navigate("/");
     };
@@ -106,7 +100,6 @@ const Login = () => {
                 <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
                     <TextField value={identifier} onChange={(event) => setIdentifier(event.target.value)} onKeyUp={(event) => validateIdentifier(event.target.value)} onBlur={(event) => validateIdentifier(event.target.value)} error={identifierValidate.error} helperText={identifierValidate.helperText} margin="normal" required fullWidth id="identifier" label="Email or Username" name="identifier" autoComplete="email" />
                     <TextField value={password} onChange={(event) => setPassword(event.target.value)} onKeyUp={(event) => validatePassword(event.target.value)} onBlur={(event) => validatePassword(event.target.value)} error={passwordValidate.error} helperText={passwordValidate.helperText} margin="normal" required fullWidth name="password" label="Password" type="password" id="password" autoComplete="current-password" />
-                    <FormControlLabel control={<Checkbox name="rememberMe" value="remember" color="primary" />} label="Remember me" />
                     {loginError && (
                         <Alert severity="error" sx={{ mt: 3 }}>
                             <AlertTitle>Login Failed!</AlertTitle>

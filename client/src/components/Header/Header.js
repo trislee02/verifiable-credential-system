@@ -1,5 +1,5 @@
 import { React, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { authActions } from "../../redux/slices/authSlice";
 import { useNavigate } from "react-router-dom";
 import AppBar from "@mui/material/AppBar";
@@ -30,6 +30,7 @@ const DEFAULT_PAGES = [{
 function Header({ pages = DEFAULT_PAGES, settings = [] }) {
     document.body.style.paddingTop = "64px";
 
+    const authenticatedUser = useSelector(store => store.authSlice.user);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -141,7 +142,8 @@ function Header({ pages = DEFAULT_PAGES, settings = [] }) {
                         ))}
                     </Box>
 
-                    <Box sx={{ flexGrow: 0 }}>
+                    <Box sx={{ flexGrow: 0, display: "flex", gap: "10px", alignItems: "center" }}>
+                        <Typography>{ authenticatedUser.name }</Typography>
                         <Tooltip title="Open settings">
                             <IconButton onClick={handleOpenUserMenu} sx={{ p: 0.5 }} color="inherit">
                                 <PersonIcon sx={{ border: "0.5px solid white", borderRadius: "50%", padding: "10px" }} />
