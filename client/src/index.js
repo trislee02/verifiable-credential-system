@@ -21,7 +21,7 @@ root.render(
         <ThemeProvider theme={theme}>
             <BrowserRouter>
                 <Routes>
-                    <Route path="/" element={<App />} />
+                    <Route path="/*" element={<App />} />
                     <Route path="auth">
                         <Route path="login" element={<Login />} />
                         <Route path="register" element={<Register />} />
