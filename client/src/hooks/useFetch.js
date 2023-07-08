@@ -17,6 +17,7 @@ const useFetch = () => {
             // console.log(error.message);
             setIsFetching(false);
             setError(error.message);
+            return null;
         }
     }, []);
 

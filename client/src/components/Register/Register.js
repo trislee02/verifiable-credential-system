@@ -162,7 +162,7 @@ const Register = () => {
         const requestBody = { name, username, email, password, type, publicKey };
 
         // Send API request
-        await register(`${apiConstants.BASE_API_URL}/api/auth/local/register`, {
+        const registerResponse = await register(`${apiConstants.BASE_API_URL}/api/auth/local/register`, {
             method: "POST",
             body: JSON.stringify(requestBody),
             headers: {
@@ -170,7 +170,7 @@ const Register = () => {
             }
         });
 
-        if (!registerError) setRegisterSuccess(true);
+        if (registerResponse) setRegisterSuccess(true);
     };
 
     return (
