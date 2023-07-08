@@ -10,7 +10,8 @@ import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
-import Link from "@mui/material/Link";
+import Avatar from "@mui/material/Avatar";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import PersonIcon from "@mui/icons-material/Person";
@@ -69,13 +70,14 @@ function Header({ pages = DEFAULT_PAGES, settings = [] }) {
                         href="/"
                         sx={{
                             mr: 2,
-                            display: { xs: "none", md: "flex" },
+                            display: { xs: "none", md: "flex", alignItems: "center" },
                             fontFamily: "monospace",
                             fontWeight: 700,
                             letterSpacing: ".3rem",
                             color: "inherit",
                             textDecoration: "none",
                         }}>
+                        <LockOutlinedIcon sx={{ mr: 2, p: 0, height: 50, width: "auto" }} />
                         VCs
                     </Typography>
                     {hasPages && (
@@ -118,7 +120,7 @@ function Header({ pages = DEFAULT_PAGES, settings = [] }) {
                         href=""
                         sx={{
                             mr: 2,
-                            display: { xs: "flex", md: "none" },
+                            display: { xs: "flex", md: "none", alignItems: "center" },
                             flexGrow: 1,
                             fontFamily: "monospace",
                             fontWeight: 700,
@@ -126,6 +128,7 @@ function Header({ pages = DEFAULT_PAGES, settings = [] }) {
                             color: "inherit",
                             textDecoration: "none",
                         }}>
+                        <LockOutlinedIcon sx={{ mr: 2, p: 0, height: 30, width: "auto" }} />
                         VCs
                     </Typography>
                     <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
