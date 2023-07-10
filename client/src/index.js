@@ -4,27 +4,31 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { dataStore } from "./redux/dataStore";
 import { Provider } from "react-redux";
-import { BrowserRouter, Routes, Route } from "react-router-dom"; 
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./components/Login/Login";
 import Register from "./components/Register/Register";
+import { ThemeProvider } from "@mui/material/styles";
+import theme from "./constants/theme";
 
-import '@fontsource/roboto/300.css';
-import '@fontsource/roboto/400.css';
-import '@fontsource/roboto/500.css';
-import '@fontsource/roboto/700.css';
+import "@fontsource/roboto/300.css";
+import "@fontsource/roboto/400.css";
+import "@fontsource/roboto/500.css";
+import "@fontsource/roboto/700.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
     <Provider store={dataStore}>
-        <BrowserRouter>
-            <Routes>
-                <Route path="/" element={ <App />} />
-                <Route path="auth">
-                    <Route path="login" element={ <Login /> } />
-                    <Route path="register" element={ <Register /> } />
-                </Route>
-            </Routes>
-        </BrowserRouter>
+        <ThemeProvider theme={theme}>
+            <BrowserRouter>
+                <Routes>
+                    <Route path="/*" element={<App />} />
+                    <Route path="auth">
+                        <Route path="login" element={<Login />} />
+                        <Route path="register" element={<Register />} />
+                    </Route>
+                </Routes>
+            </BrowserRouter>
+        </ThemeProvider>
     </Provider>
 );
 
