@@ -6,7 +6,7 @@ const user = localStorage.getItem("user");
 if (token && user) {
     authState = {
         isAuthenticated: true,
-        user: user,
+        user: JSON.parse(user),
         jwt: token
     }
 }

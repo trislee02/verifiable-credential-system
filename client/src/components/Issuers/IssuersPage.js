@@ -5,6 +5,7 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import IssueOne from "./IssueOne";
+import IssueMany from "./IssueMany";
 
 const IssuersPage = () => {
     const [issueMode, setIssueMode] = useState("one"); // "one" or "many"
@@ -19,7 +20,7 @@ const IssuersPage = () => {
                     </TabList>
                 </Box>
                 <TabPanel value="one"><IssueOne /></TabPanel>
-                <TabPanel value="many">Item Two</TabPanel>
+                <TabPanel value="many"><IssueMany /></TabPanel>
             </TabContext>
         </Box>
     );
