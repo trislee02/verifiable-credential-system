@@ -2,105 +2,127 @@ import React, { useState } from "react";
 import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
-import AddBoxIcon from "@mui/icons-material/AddBox";
-import DeleteIcon from "@mui/icons-material/Delete";
 import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
+import { Typography, Alert } from "@mui/material";
+import { JsonView, darkStyles, defaultStyles } from 'react-json-view-lite';
+import 'react-json-view-lite/dist/index.css';
+import CredentialSelection from "./CredentialSelection";
 
-const IssueOne = () => {
-    const [holderIdentifier, setHolderIdentifier] = useState("");
+const FormView = () => {
     const [issuerPrivateKey, setIssuePrivateKey] = useState("");
-    const [credentialFields, setCredentialFields] = useState([{ key: "", value: "", error: false, helperText: "" }]);
+    const [json, setJson] = useState(null);
 
-    const onFieldKeyChange = (index, newKey) => {
-        setCredentialFields((prev) => {
-            if (index < 0 || index >= prev.length) return;
-            let cloned = [...prev];
-            cloned[index].key = newKey;
-            if (cloned.filter((field) => field.key === newKey).length > 1) {
-                cloned[index].error = true;
-                cloned[index].helperText = "WARNING! This field's name is duplicated! All the above fields with the same name will be overwritten!";
-            } else {
-                cloned[index].error = false;
-                cloned[index].helperText = "";
-            }
-            return cloned;
-        });
-    };
+    const [open, setOpen] = useState(false);
+    const [cred, setCred] = useState("");
 
-    const onFieldValueChange = (index, newValue) => {
-        setCredentialFields((prev) => {
-            if (index < 0 || index >= prev.length) return;
-            let cloned = [...prev];
-            cloned[index].value = newValue;
-            return cloned;
-        });
-    };
+    const [unencrypted, setUnencrypted] = useState(false);
+    const [accepted, setAccepted] = useState(null);
 
-    const onAddField = () => {
-        setCredentialFields((prev) => {
-            let cloned = [...prev];
-            cloned.push({ key: "", value: "" });
-            return cloned;
-        });
-    };
-
-    const onDeleteField = (index) => {
-        setCredentialFields((prev) => {
-            if (index < 0 || index >= prev.length) return;
-            let cloned = [...prev];
-            cloned.splice(index, 1);
-            return cloned;
-        });
-    };
-
-    const onIssue = () => {
-        let fields = credentialFields.filter((field) => field.key.trim().length > 0);
-        let credential = {};
-        for (const field of fields) {
-            credential[field.key] = field.value;
+    const JSONChangedHandler = (event) => {
+        if (event.target.files.length) {
+            const inputFile = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = async ({ target }) => {
+                var json = JSON.parse(target.result);
+                console.log(json);
+                setJson(json);
+                setCred("");
+                setUnencrypted(true);
+            };
+            reader.readAsText(inputFile);
         }
-        console.log(credential);
+    };
+
+    const onSelectCredential = () => {
+        setOpen(true);
+    };
+
+    const handleClose = (newValue) => {
+        console.log(newValue);
+        setOpen(false);
+    
+        if (newValue) {
+          setCred(newValue);
+          setJson(null);
+          setUnencrypted(false);
+        }
+      };
+
+    const onSubmit = () => {
+        setAccepted(true);
     };
 
     return (
         <Box sx={{ marginInline: "5vw", display: "flex", justifyContent: "center" }}>
             <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                    <TextField value={holderIdentifier} onChange={(event) => setHolderIdentifier(event.target.value)} id="holder" label="Holder's identifier" variant="filled" fullWidth required />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                    <TextField value={issuerPrivateKey} onChange={(event) => setIssuePrivateKey(event.target.value)} id="issuer" label="Issuer's Private Key" variant="filled" type="password" fullWidth required />
-                </Grid>
                 <Grid item xs={12}>
-                    {credentialFields.map((obj, index) => {
-                        return (
-                            <Box key={index} sx={{ display: "flex", gap: "10px", alignItems: "center", minHeight: "75px", minWidth: "70vw", maxWidth: "90vw" }}>
-                                <TextField label="Field's name" value={obj.key} onChange={(event) => onFieldKeyChange(index, event.target.value)} sx={{ padding: "0px !important;", flex: 1, alignSelf: "flex-start" }} error={obj.error} helperText={obj.helperText} />
-                                <TextField label="Value" value={obj.value} onChange={(event) => onFieldValueChange(index, event.target.value)} sx={{ padding: "0px !important;", flex: 1, alignSelf: "flex-start" }} />
-                                <Button variant="contained" endIcon={<AddBoxIcon />} sx={{ height: "50px", width: "auto", alignSelf: "flex-start" }} onClick={onAddField}>
-                                    <Typography sx={{ display: { xs: "none", md: "inline" } }}>Add</Typography>
-                                </Button>
-                                <Button variant="contained" color="error" endIcon={<DeleteIcon />} sx={{ height: "50px", width: "auto", alignSelf: "flex-start" }} onClick={() => onDeleteField(index)}>
-                                    <Typography sx={{ display: { xs: "none", md: "inline" } }}>Delete</Typography>
-                                </Button>
-                            </Box>
-                        );
-                    })}
-                    {credentialFields.length === 0 && (
-                        <Button variant="contained" endIcon={<AddBoxIcon />} sx={{ height: "50px", width: "auto" }} onClick={onAddField}>
-                            Add Field
-                        </Button>
-                    )}
+                    <TextField value="fadf1f3a1e54451f5a1df11f3e1321" 
+                               onChange={(event) => setIssuePrivateKey(event.target.value)} 
+                               id="issuer" 
+                               label="Verifier's Public Key" 
+                               variant="filled" 
+                               type="password" fullWidth
+                               disabled/>
                 </Grid>
+
+                {!unencrypted && (
+                    <Grid item xs={12}>
+                        <TextField value={issuerPrivateKey} 
+                                onChange={(event) => setIssuePrivateKey(event.target.value)} 
+                                id="issuer" 
+                                label="Holder's Private Key" 
+                                variant="filled" 
+                                type="password" fullWidth required />
+                    </Grid>
+                )}
+                {cred !== "" && (
+                    <Grid item xs={12}>
+                        <Typography variant="subtitle">Selected credential: {cred}</Typography>
+                    </Grid>
+                )}
+                {json !== null && (
+                    <Grid item xs={12}>
+                        <JsonView data={json} shouldInitiallyExpand={(level) => true} style={defaultStyles} />
+                    </Grid>
+                )}
                 <Grid item xs={12}>
-                    <Button variant="contained" sx={{ width: "100%", padding: "10px 0px" }} onClick={onIssue}>
-                        Issue
+                    <Button variant="outlined" component="label" fullWidth>
+                        Upload raw JSON File
+                        <input type="file" accept=".json" onChange={JSONChangedHandler} hidden />
                     </Button>
                 </Grid>
+                <Grid item xs={12}>
+                    <Button variant="outlined" component="label" fullWidth
+                            onClick={onSelectCredential}>
+                        Choose existing credential
+                    </Button>
+                </Grid>
+                <Grid item xs={12}>
+                    <Button variant="contained" fullWidth sx={{ padding: "10px 0px" }} onClick={onSubmit}>
+                        Submit
+                    </Button>
+                </Grid>
+                {accepted !== null && accepted === true && (
+                    <Grid item xs={12}>
+                        <Alert severity="success">Valid credential</Alert>
+                    </Grid>
+                )}
+                {accepted !== null && accepted === false && (
+                    <Grid item xs={12}>
+                        <Alert severity="error">Invalid credential</Alert>
+                    </Grid>
+                )}
+
+                
             </Grid>
+            <CredentialSelection 
+                id="ringtone-menu"
+                keepMounted
+                open={open}
+                onClose={handleClose}
+                valueProp={cred}/>
         </Box>
     );
 };
 
-export default IssueOne;
+export default FormView;
