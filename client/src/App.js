@@ -3,6 +3,7 @@ import Header from "./components/Header/Header";
 import { useSelector } from "react-redux";
 import { Routes, Route, Navigate } from "react-router-dom";
 import IssuersPage from "./components/Issuers/IssuersPage";
+import FormPage from "./components/Form/FormPage";
 
 const App = () => {
     const authenticated = useSelector((store) => store.authSlice.isAuthenticated);
@@ -13,7 +14,7 @@ const App = () => {
             <Routes>
                 <Route path="issuers" element={<IssuersPage />} />
                 <Route path="holders" element={<h1>This is Holders page</h1>} />
-                <Route path="f/:id" element={<h1>test</h1>}/>
+                <Route path="f/:id" element={<FormPage/>}/>
                 <Route path="verifiers" element={<h1>This is Verifiers page</h1>} />
             </Routes>
         </React.Fragment>
