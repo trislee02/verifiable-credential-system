@@ -5,6 +5,8 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import IssuersPage from "./components/Issuers/IssuersPage";
 import { testRSA } from "./lib/crypto_lib";
 import { runVCProtocolTest } from "./lib/vc_protocol";
+import FormPage from "./components/Form/FormPage";
+import HoldersPage from "./components/Holders/HoldersPage";
 
 const TestRSACrypto = () => {
   useEffect(() => {
@@ -22,7 +24,8 @@ const App = () => {
             <Routes>
                 <Route path="/" element={<TestRSACrypto />} />
                 <Route path="issuers" element={<IssuersPage />} />
-                <Route path="holders" element={<h1>This is Holders page</h1>} />
+                <Route path="holders" element={<HoldersPage />} />
+                <Route path="f/:id" element={<FormPage/>}/>
                 <Route path="verifiers" element={<h1>This is Verifiers page</h1>} />
             </Routes>
         </React.Fragment>
