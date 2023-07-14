@@ -7,29 +7,33 @@ import { testRSA } from "./lib/crypto_lib";
 import { runVCProtocolTest } from "./lib/vc_protocol";
 import FormPage from "./components/Form/FormPage";
 import HoldersPage from "./components/Holders/HoldersPage";
+import VerifierPage from "./components/Verifiers/VerifierPage";
+import { SetPrivateKeyForm } from "./components/Verifiers/SetPrivateKeyForm";
 
 const TestRSACrypto = () => {
   useEffect(() => {
     testRSA();
     runVCProtocolTest();
   }, []);
-  return (<>Hello RSA</>)
-}
+  return <>Hello RSA</>;
+};
+
 const App = () => {
-    const authenticated = useSelector((store) => store.authSlice.isAuthenticated);
-    if (!authenticated) return <Navigate to="/auth/login" />;
-    return (
-        <React.Fragment>
-            <Header />
-            <Routes>
-                <Route path="/" element={<TestRSACrypto />} />
-                <Route path="issuers" element={<IssuersPage />} />
-                <Route path="holders" element={<HoldersPage />} />
-                <Route path="f/:id" element={<FormPage/>}/>
-                <Route path="verifiers" element={<h1>This is Verifiers page</h1>} />
-            </Routes>
-        </React.Fragment>
-    );
+  const authenticated = useSelector((store) => store.authSlice.isAuthenticated);
+  if (!authenticated) return <Navigate to="/auth/login" />;
+  return (
+    <React.Fragment>
+      <Header />
+      <Routes>
+        <Route path="/" element={<TestRSACrypto />} />
+        <Route path="issuers" element={<IssuersPage />} />
+        <Route path="holders" element={<HoldersPage />} />
+        <Route path="f/:id" element={<FormPage />} />
+        <Route path="verifiers" element={<VerifierPage />} />
+      </Routes>
+      <SetPrivateKeyForm />
+    </React.Fragment>
+  );
 };
 
 export default App;

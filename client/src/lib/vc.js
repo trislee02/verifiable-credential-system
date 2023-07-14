@@ -33,9 +33,74 @@
 //   proof: DataSignatureInterface;
 // }
 
-export function getPublicCredential(
-  cred,
-) {
+export function getPublicCredential(cred) {
   delete cred.credentialSubject;
   return cred;
+}
+
+export const NativeOperator = {
+  EQ: "$EQ",
+  NE: "$NE",
+  LT: "$LT",
+  LTE: "$LTE",
+  GT: "$GT",
+  GTE: "$GTE",
+  INVALID_OP: "",
+};
+
+export function getOp(opStr) {
+  switch (opStr) {
+    case "$EQ":
+      return NativeOperator.EQ;
+    case "$GT":
+      return NativeOperator.GT;
+    case "$GTE":
+      return NativeOperator.GTE;
+    case "$NE":
+      return NativeOperator.NE;
+    case "$LT":
+      return NativeOperator.LT;
+    case "$LTE":
+      return NativeOperator.LTE;
+    default:
+      return NativeOperator.INVALID_OP;
+  }
+}
+
+export function getOperatorText(operator) {
+  switch (operator) {
+    case NativeOperator.EQ:
+      return "Equal";
+    case NativeOperator.NE:
+      return "Not Equal";
+    case NativeOperator.LT:
+      return "Less Than";
+    case NativeOperator.LTE:
+      return "Less Than or Equal";
+    case NativeOperator.GT:
+      return "Greater Than";
+    case NativeOperator.GTE:
+      return "Greater Than or Equal";
+    default:
+      return "Invalid Operator";
+  }
+}
+
+export function mapOperatorToSymbol(operator) {
+  switch (operator) {
+    case NativeOperator.EQ:
+      return "=";
+    case NativeOperator.GT:
+      return ">";
+    case NativeOperator.GTE:
+      return "≥";
+    case NativeOperator.NE:
+      return "≠";
+    case NativeOperator.LT:
+      return "<";
+    case NativeOperator.LTE:
+      return "≤";
+    default:
+      return "";
+  }
 }
