@@ -56,11 +56,16 @@ const HoldersPage = () => {
         var privateKeyText = privateKey;
         const rsaPrivateKey = convertPrivateKeyToRSAKey(privateKeyText);
         const decrypted = rsaDecrypt(rsaPrivateKey, selectedCred.holderPayload);
-        var json = JSON.parse(decrypted);
-        console.log(json);
-        setCredJson(json);
-        setOpenCredDialog(true);
         handleClose();
+        if (decrypted !== "false") {
+            var json = JSON.parse(decrypted);
+            console.log(json);
+            setCredJson(json);
+            setOpenCredDialog(true);
+        }
+        else {
+            alert("Invalid private key!");
+        }
     }
 
     return (
