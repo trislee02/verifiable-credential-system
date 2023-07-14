@@ -8,14 +8,7 @@ import Divider from '@mui/material/Divider';
 import InboxIcon from '@mui/icons-material/Inbox';
 import DraftsIcon from '@mui/icons-material/Drafts';
 
-const listCred = [
-    "Credential 1",
-    "Credential 2",
-    "Credential 3",
-    "Credential 4"
-]
-
-export default function SelectedList({ onSelectCred }) {
+export default function SelectedList({ onSelectCred, listCred }) {
   const [selectedIndex, setSelectedIndex] = React.useState(1);
 
   const handleListItemClick = (event, index, cred) => {
