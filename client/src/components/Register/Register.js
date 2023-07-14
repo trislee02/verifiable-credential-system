@@ -153,8 +153,15 @@ const Register = () => {
         const validPublicKey = validatePublicKey(publicKey);
 
         if (!(validName && validUsername && validEmail && validPassword && validPublicKey)) return;
-
-        const requestBody = { name, username, email, password, type, publicKey };
+        
+        const requestBody = { 
+            name: name, 
+            username: username, 
+            email: email, 
+            password: password, 
+            type: type, 
+            publicKey: publicKey
+        };
 
         // Send API request
         const registerResponse = await register(`${apiConstants.BASE_API_URL}/api/auth/local/register`, {

@@ -29,6 +29,7 @@
 //   expirationDate?: string;
 //   credentialSubject?: any;
 //   encryptedData: string;
+//   encryptedDataForIssuer: string;
 //   proof: DataSignatureInterface;
 // }
 

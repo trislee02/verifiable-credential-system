@@ -71,18 +71,25 @@ export async function issueVC({
     issuanceDate: curDate,
     ...(expirationDate && { expirationDate }),
     encryptedData: "",
+    encryptedDataForIssuer: "",
     credentialSubject,
   };
 
   const standardPublicCred = ignoreFields(tempCred, [
     "id",
     "encryptedData",
+    "encryptedDataForIssuer",
     "proof",
   ]);
 
   delete tempCred.credentialSubject;
   tempCred.encryptedData = rsaEncrypt(
     holderPublicKey,
+    JSON.stringify(credentialSubject)
+  );
+
+  tempCred.encryptedDataForIssuer = rsaEncrypt(
+    issuerPublicKey,
     JSON.stringify(credentialSubject)
   );
 
