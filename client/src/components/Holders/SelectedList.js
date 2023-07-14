@@ -22,12 +22,13 @@ export default function SelectedList({ onSelectCred, listCred }) {
         {listCred.map((cred, index) => (
             <>
                 <ListItemButton
+                    key={index}
                     selected={selectedIndex === index}
                     onClick={(event) => handleListItemClick(event, index, cred)}>
                     <ListItemIcon>
                         <InboxIcon />
                     </ListItemIcon>
-                    <ListItemText primary={cred} />
+                    <ListItemText primary={`Credential ${index + 1}`} />
                 </ListItemButton>
                 <Divider />
             </>

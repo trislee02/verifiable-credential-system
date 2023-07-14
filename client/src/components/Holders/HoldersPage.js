@@ -10,13 +10,17 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import useFetch from "../../hooks/useFetch";
 import apiConstants from "../../constants/api";
-
+import CredentialViewer from "./CredentialViewer";
+import { JsonView, darkStyles, defaultStyles } from 'react-json-view-lite';
+import { rsaDecrypt, convertPrivateKeyToRSAKey } from "../../lib/crypto_lib";
 
 const HoldersPage = () => {    
     const [selectedCred, setSelectedCred] = useState(null);
     const [openDialog, setOpenDialog] = useState(false);
+    const [openCredDialog, setOpenCredDialog] = useState(false);
     const [privateKey, setPrivateKey] = useState("");
     const [listCred, setListCred] = useState(null);
+    const [credJson, setCredJson] = useState(null);
 
     const [getCreds, gettingCred, getCredError] = useFetch();
     
@@ -44,8 +48,18 @@ const HoldersPage = () => {
         setOpenDialog(false);
     };
 
+    const handleCredClose = () => {
+        setOpenCredDialog(false);
+    }
+
     const handleDecrypt = () => {
-        alert("Decrypt success");
+        var privateKeyText = privateKey;
+        const rsaPrivateKey = convertPrivateKeyToRSAKey(privateKeyText);
+        const decrypted = rsaDecrypt(rsaPrivateKey, selectedCred.holderPayload);
+        var json = JSON.parse(decrypted);
+        console.log(json);
+        setCredJson(json);
+        setOpenCredDialog(true);
         handleClose();
     }
 
@@ -75,10 +89,13 @@ const HoldersPage = () => {
                 />
                 </DialogContent>
                 <DialogActions>
-                <Button onClick={handleClose}>Cancel</Button>
-                <Button onClick={handleDecrypt}>Decrypt</Button>
+                    <Button onClick={handleClose}>Cancel</Button>
+                    <Button onClick={handleDecrypt}>Decrypt</Button>
                 </DialogActions>
             </Dialog>
+            <CredentialViewer open={openCredDialog} scroll="paper" handleClose={handleCredClose}>
+                <JsonView data={credJson} shouldInitiallyExpand={(level) => true} style={defaultStyles} />
+            </CredentialViewer>
         </Box>
     );
 };
