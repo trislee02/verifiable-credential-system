@@ -117,7 +117,7 @@ const IssueOne = () => {
         try {
             if (!validateHolderIdentifier(holderIdentifier) || 
                 !validateIssuerPrivateKey(issuerPrivateKey) ||
-                !(expirationDate && expirationDate instanceof Date)) throw new Error("Missing information!");
+                !(expirationDate && expirationDate instanceof Date && expirationDate.toString() !== "Invalid Date")) throw new Error("Missing information!");
             
             try {
                 if (!verifyKeyPair(issuerPrivateKey, issuerPublicKey)) {
