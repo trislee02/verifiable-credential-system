@@ -14,6 +14,7 @@ import Accordion from "@mui/material/Accordion";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { Link } from "@mui/material";
 
 const SchemaCheck = ({ check, index }) => {
   const [entries, setEntries] = useState(Object.entries(check));
@@ -76,7 +77,8 @@ const SchemaComponent = ({ curSchema }) => {
         id="panel3bh-header"
       >
         <Typography sx={{ width: "33%", flexShrink: 0 }}>Form ID</Typography>
-        <Typography sx={{ color: "text.secondary" }}>{curSchema.id}</Typography>
+        {/* <Typography sx={{ color: "text.secondary" }}>{curSchema.form_id_server}</Typography> */}
+        {curSchema?.form_id_server && <Link href={`/f/${curSchema.form_id_server}`}>{`Go to form`}</Link>}
       </AccordionSummary>
       <AccordionDetails>
         <Typography variant="body1">Verifier: {curSchema.verifier}</Typography>

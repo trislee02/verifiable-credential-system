@@ -81,6 +81,7 @@ const tempPresentation = {
 const FormPage = () => {
   const [issueMode, setIssueMode] = useState("one");
 
+  const [submitPresentaion, isSubmitting, submissionError] = useFetch();
   const [getForm, isGettingForm, getFormError] = useFetch();
   const [form, setForm] = useState(tmpForm);
   const [submissions, setSubmissions] = useState([
@@ -93,7 +94,6 @@ const FormPage = () => {
   console.log(id);
 
   useEffect(() => {
-    return;
     const getMyForm = async () => {
       const credResponse = await getForm(
         `${apiConstants.BASE_API_URL}/api/forms/${id}`,
@@ -106,13 +106,38 @@ const FormPage = () => {
         }
       );
       if (credResponse !== null && getFormError === null) {
-        console.log(credResponse.data.form);
-        setForm(credResponse.data.form);
-        setSubmissions(credResponse.data.submissions);
+        console.log(credResponse.data);
+        setForm(credResponse.data.schema);
+        setSubmissions([credResponse.data.presentation]);
       }
     };
     getMyForm();
   }, []);
+
+  const submitForm = async (presentation) => {
+    const response = await submitPresentaion(
+        `${apiConstants.BASE_API_URL}/api/forms/${id}`,
+        {
+          method: "PUT",
+          body: JSON.stringify({
+            "status": "GOOD",
+            "presentation": presentation,
+            "name": "Good boy"
+          }),
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.token}`,
+          },
+        }
+    );
+    if (submissionError === null) {
+      return true;
+    }
+    else {
+      console.log(submissionError);
+      return false;
+    }
+  }
 
   const isVerifier =
     form?.verifierPublicKey &&
@@ -129,7 +154,13 @@ const FormPage = () => {
       )}
       {!getFormError &&
         (isVerifier ? (
-          <SubmissionList submissions={submissions} form={form} />
+          submissions ? (
+            <SubmissionList submissions={submissions} form={form} />
+          ) : (
+            <Grid item xs={12}>
+                <Alert severity="error">No submission</Alert>
+            </Grid>
+          )
         ) : (
           <Grid
             container
@@ -139,7 +170,7 @@ const FormPage = () => {
           >
             <Typography variant="h3">Form</Typography>
             <Box sx={{ width: "100%", typography: "body1" }}>
-              <FormView />
+              <FormView form={form} submitForm={submitForm}/>
             </Box>
           </Grid>
         ))}

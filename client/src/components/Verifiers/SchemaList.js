@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
@@ -12,6 +12,9 @@ import SchemaComponent from "./SchemaComponent";
 import CreateForm from "./CreateForm";
 import { useSelector } from "react-redux";
 import { SetPrivateKeyForm } from "./SetPrivateKeyForm";
+import useFetch from "../../hooks/useFetch";
+import apiConstants from "../../constants/api";
+
 const tmpSchema = {
   verifier: "C",
   verifierPublicKey:
@@ -40,35 +43,38 @@ const tmpSchema = {
 
 const SchemaList = () => {
   const user = useSelector((store) => store.authSlice.user);
+  const token = useSelector((store) => store.authSlice.jwt);
+
   const [json, setJson] = useState(null);
   const [createdForms, setCreatedForms] = useState([tmpSchema]);
+  const [fetcher, isFetching, fetchingError] = useFetch().slice(0, 2);
 
-  const handleCreateSchema = async (event) => {
-    event.preventDefault();
-
-    // // Validate inputs
-    // const validIdentifier = validateIdentifie(identifier);
-    // const validPassword = validatePassword(password);
-    // if (!(validIdentifier && validPassword)) return;
-
-    // // Send API request
-    // const loginResponse = await login(`${apiConstants.BASE_API_URL}/api/auth/local`, {
-    //     method: "POST",
-    //     body: JSON.stringify({ identifier, password }),
-    //     headers: {
-    //         "Content-Type": "application/json",
-    //     },
-    // });
-
-    // if (!loginResponse) return;
-    // setLoginSuccess(true);
-
-    // dispatch(authActions.login(loginResponse));
-    // localStorage.setItem("token", loginResponse.jwt);
-    // localStorage.setItem("user", JSON.stringify(loginResponse.user));
-
-    // navigate("/");
-  };
+  useEffect(() => {
+    const getMySchemas = async () => {
+      const responseData = await fetcher(
+        `${apiConstants.BASE_API_URL}/api/my-forms/sending-forms`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (!responseData) {
+        console.log(fetchingError);
+        return;
+      }
+      var myCreatedForms = responseData.data.map((data) => {
+        data.schema.form_id_server = data.id;
+        return data.schema;
+      });
+      console.log(myCreatedForms);
+      console.log(responseData.data);
+      setCreatedForms(myCreatedForms);
+    };
+    getMySchemas();
+  }, [])
 
   const [open, setOpen] = useState(false);
   const [cred, setCred] = useState("");

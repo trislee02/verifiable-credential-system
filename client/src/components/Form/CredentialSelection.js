@@ -25,7 +25,7 @@ const options = [
     'Umbriel',
   ];
 
-const CredentialSelection = ({ id, onClose, open, keepMounted, valueProp}) => {
+const CredentialSelection = ({ id, onClose, open, credList, valueProp}) => {
     const [value, setValue] = useState(valueProp);
     const radioGroupRef = useRef(null);
 
@@ -42,11 +42,11 @@ const CredentialSelection = ({ id, onClose, open, keepMounted, valueProp}) => {
     };
 
     const handleCancel = () => {
-        onClose();
+        onClose(null);
     };
 
     const handleOk = () => {
-        onClose(value);
+        onClose(credList[value]);
     };
 
     const handleChange = (event) => {
@@ -70,14 +70,22 @@ const CredentialSelection = ({ id, onClose, open, keepMounted, valueProp}) => {
                 onChange={handleChange}
                 >
 
-                {options.map((option) => (
+                {credList.map((cred, index) => (
+                    <FormControlLabel
+                        value={index}
+                        key={index}
+                        control={<Radio />}
+                        label={`Credential ${index + 1}`}
+                    />
+                ))}
+                {/* {options.map((option) => (
                     <FormControlLabel
                         value={option}
                         key={option}
                         control={<Radio />}
                         label={option}
                     />
-                ))}
+                ))} */}
             </RadioGroup>
         </DialogContent>
         <DialogActions>
