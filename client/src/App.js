@@ -19,13 +19,17 @@ const TestRSACrypto = () => {
 };
 
 const App = () => {
+  useEffect(() => {
+    testRSA();
+    runVCProtocolTest();
+  }, []);
   const authenticated = useSelector((store) => store.authSlice.isAuthenticated);
   if (!authenticated) return <Navigate to="/auth/login" />;
   return (
     <React.Fragment>
       <Header />
       <Routes>
-        <Route path="/" element={<TestRSACrypto />} />
+        <Route index path="/" element={<IssuersPage />} />
         <Route path="issuers" element={<IssuersPage />} />
         <Route path="holders" element={<HoldersPage />} />
         <Route path="f/:id" element={<FormPage />} />

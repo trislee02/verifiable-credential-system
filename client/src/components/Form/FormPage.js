@@ -102,12 +102,12 @@ const FormPage = () => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.token}`,
+            "Authorization": `Bearer ${localStorage.token}`,
           },
         }
       );
       if (credResponse !== null && getFormError === null) {
-        console.log(credResponse.data);
+        console.log("response data schema", credResponse.data.schema);
         setForm(credResponse.data.schema);
         if (credResponse.data.presentation)
           setSubmissions([credResponse.data.presentation]);

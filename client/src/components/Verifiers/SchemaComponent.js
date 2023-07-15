@@ -23,9 +23,6 @@ const SchemaCheck = ({ check, index }) => {
     setEntries(Object.entries(check));
   }, [check]);
 
-  console.log("check");
-  console.log(check);
-
   return (
     <CardContent>
       {entries.map(
@@ -34,13 +31,13 @@ const SchemaCheck = ({ check, index }) => {
             <div
               style={{ display: "flex", flexDirection: "row", width: "100%" }}
             >
-              <TextField defaultValue={`${entry[0]}`} style={{ flex: 1 }} disabled/>
+              <TextField value={`${entry[0]}`} style={{ flex: 1 }} disabled/>
               <FormControl style={{ flex: 1 }} disabled>
                 <Select value={entry[1][0]}>
                   <MenuItem value={entry[1][0]}>{entry[1][0]}</MenuItem>
                 </Select>
               </FormControl>
-              <TextField defaultValue={entry[1][1]} style={{ flex: 1 }} disabled/>
+              <TextField value={entry[1][1]} style={{ flex: 1 }} disabled/>
             </div>
           )
       )}
@@ -48,26 +45,29 @@ const SchemaCheck = ({ check, index }) => {
   );
 };
 
-const RequestInput = ({ index, request }) => (
-  <CardContent>
-    <div style={{ display: "flex", flexDirection: "row", width: "100%" }}>
-      <TextField
-        label="Credential index"
-        defaultValue={Number((request ?? " . ").split(".")[0]) + 1}
-        style={{ flex: 1 }}
-        disabled
-      />
-      <TextField
-        label="Field Name"
-        defaultValue={(request ?? " . ").split(".")[1]}
-        style={{ flex: 1 }}
-        disabled
-      />
-    </div>
-  </CardContent>
-);
+const RequestInput = ({ index, request }) => {
+  return(
+    <CardContent>
+      <div style={{ display: "flex", flexDirection: "row", width: "100%" }}>
+        <TextField
+          label="Credential index"
+          value={Number((request ?? " . ").split(".")[0]) + 1}
+          style={{ flex: 1 }}
+          disabled
+        />
+        <TextField
+          label="Field Name"
+          value={(request ?? " . ").split(".")[1]}
+          style={{ flex: 1 }}
+          disabled
+        />
+      </div>
+    </CardContent>
+  );
+}
 
 const SchemaComponent = ({ curSchema }) => {
+  console.log("curSchema", curSchema);
   const [expanded, setExpanded] = useState(false);
 
   return (
