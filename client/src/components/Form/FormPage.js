@@ -84,10 +84,11 @@ const FormPage = () => {
   const [submitPresentaion, isSubmitting, submissionError] = useFetch();
   const [getForm, isGettingForm, getFormError] = useFetch();
   const [form, setForm] = useState(tmpForm);
-  const [submissions, setSubmissions] = useState([
-    _.cloneDeep(tempPresentation),
-    _.cloneDeep({...tempPresentation, id: "123"}),
-  ]);
+  // const [submissions, setSubmissions] = useState([
+  //   _.cloneDeep(tempPresentation),
+  //   _.cloneDeep({...tempPresentation, id: "123"}),
+  // ]);
+  const [submissions, setSubmissions] = useState(null);
   const user = useSelector((store) => store.authSlice.user);
 
   let { id } = useParams();
@@ -108,7 +109,9 @@ const FormPage = () => {
       if (credResponse !== null && getFormError === null) {
         console.log(credResponse.data);
         setForm(credResponse.data.schema);
-        setSubmissions([credResponse.data.presentation]);
+        if (credResponse.data.presentation)
+          setSubmissions([credResponse.data.presentation]);
+        
       }
     };
     getMyForm();

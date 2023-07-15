@@ -11,7 +11,7 @@ import _ from "lodash";
 import useFetch from "../../hooks/useFetch";
 import apiConstants from "../../constants/api";
 import { rsaDecrypt, convertPrivateKeyToRSAKey } from "../../lib/crypto_lib";
-import { generateVCPresentation } from "../../lib/vc_protocol";
+import { generateVCPresentation, decryptVC } from "../../lib/vc_protocol";
 
 const tmpForm = {
     verifier: "C",
@@ -148,22 +148,28 @@ const FormView = ({ form, submitForm }) => {
     
     const onSubmit = async () => {
         var privateKeyText = holderPrivateKey;
-        console.log(cred);
+        const publicCredential = cred.payload;
+        console.log("Credential is");
+        console.log(publicCredential);
+
         if (validateCredential()) {
-            const rsaPrivateKey = convertPrivateKeyToRSAKey(privateKeyText);
-            const decrypted = rsaDecrypt(rsaPrivateKey, cred.holderPayload);
-            if (decrypted !== "false") {
-                var json = JSON.parse(decrypted);
-                console.log(json);
+            const rawFullCredential = await decryptVC({
+                holderPrivateKey: holderPrivateKey,
+                credential: publicCredential,
+              });
+            console.log("Raw full credential");
+            console.log(rawFullCredential);
+            
+            if (rawFullCredential.credentialSubject !== undefined) {
                 const holderPublicKey = JSON.parse(localStorage.getItem("user")).publicKey;
                 console.log("Holder public key: " + holderPublicKey);
                 const presentation = await generateVCPresentation({
-                    holder: localStorage.getItem("user"),
+                    holder: localStorage.getItem("user").username,
                     holderPrivateKey: holderPrivateKey,
                     holderPublicKey: holderPublicKey,
                     verifierPublicKey: form.verifierPublicKey,
                     schema: form,
-                    credentials: [decrypted],
+                    credentials: [rawFullCredential],
                   });
                 console.log(presentation);
                 const submissionResponse = await submitForm(presentation);
@@ -207,12 +213,12 @@ const FormView = ({ form, submitForm }) => {
                         <JsonView data={json} shouldInitiallyExpand={(level) => true} style={defaultStyles} />
                     </Grid>
                 )}
-                <Grid item xs={12}>
+                {/* <Grid item xs={12}>
                     <Button variant="outlined" component="label" fullWidth>
                         Upload raw JSON File
                         <input type="file" accept=".json" onChange={JSONChangedHandler} hidden />
                     </Button>
-                </Grid>
+                </Grid> */}
                 <Grid item xs={12}>
                     <Button variant="outlined" component="label" fullWidth
                             onClick={onSelectCredential}>

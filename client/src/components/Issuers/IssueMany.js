@@ -176,13 +176,14 @@ const IssueMany = () => {
             body: JSON.stringify({
                 credentials: publicCredentials.map(publicCredential => {
                     return {
+                        payload: publicCredential,
+                        holder: publicCredential.holderId,
                         holderPayload: publicCredential.encryptedData,
                         issuerPayload: publicCredential.encryptedDataForIssuer,
                         expirationDate: publicCredential.expirationDate,
                         issuanceDate: publicCredential.issuanceDate,
                         proof: publicCredential.proof,
-                        types: publicCredential.types,
-                        holder: publicCredential.holderId
+                        types: publicCredential.types
                     }
                 }),
                 replyingChallenge: replyingChallenge

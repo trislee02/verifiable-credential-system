@@ -113,7 +113,7 @@ export async function issueVC({
 }
 export function verifyValidVC(credential) {
   const { proof, credentialSubject, id, ...publicFields } = credential;
-
+  
   const signature = proof.value;
 
   try {
@@ -289,9 +289,12 @@ export function verifiyVCPresentationSignatures(
   const { proof, id, ...publicFields } = presentation;
 
   const { value: signature, verificationMethod: holderPublicKey } = proof;
-
+  console.log("Verifying VC Presentation Signature...");
   // validate credentials
   const schema = presentation.schema;
+  console.log("public fields");
+  console.log(publicFields);
+  console.log(signature);
   if (
     !(
       rsaVerify(holderPublicKey, JSON.stringify(publicFields), signature) &&
@@ -300,14 +303,17 @@ export function verifiyVCPresentationSignatures(
   )
     throw InvalidVCPresentation; // validate signature & schema
 
+  console.log("Verifying VC Presentation Signature: Valid signature");
   if (!verifyValidSchema(schema)) {
     throw InvalidSchema;
   }
-
+  console.log("Verifying VC Presentation Signature: Valid schema");
   const credentials = JSON.parse(
     rsaDecrypt(verifierPrivateKey, presentation.encryptedData)
   );
 
+  console.log("Decryted credential");
+  console.log(credentials);
   for (let i = 0; i < credentials.length; ++i) {
     if (!verifyValidVC(credentials[i])) {
       throw InvalidCredential;
@@ -383,6 +389,8 @@ export async function runVCProtocolTest() {
 
   // issuer send PUBLIC VERSION of the credential to holder
   const publicCredential = getPublicCredential(fullCredential);
+  console.log("public credential for holder:");
+  console.log(publicCredential);
   //////////////////////////////////////////////////////////////////////////////////////////////////////
   //// STEP 2: Holder decrypt the credential to get the raw content
   const rawFullCredential = await decryptVC({

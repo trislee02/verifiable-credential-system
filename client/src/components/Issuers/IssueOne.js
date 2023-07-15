@@ -162,17 +162,22 @@ const IssueOne = () => {
     }
 
     const saveCredentialToServer = async (publicCredential, holderId, replyingChallenge) => {
+        console.log({
+            credentials: publicCredential,
+            replyingChallenge: replyingChallenge
+        });
         const responseData = await issueFetch(`${apiConstants.BASE_API_URL}/api/credentials`, {
             method: "POST",
             body: JSON.stringify({
                 credentials: [
                     {
+                        holder: publicCredential.holderId,
                         holderPayload: publicCredential.encryptedData,
                         issuerPayload: publicCredential.encryptedDataForIssuer,
                         expirationDate: publicCredential.expirationDate,
                         issuanceDate: publicCredential.issuanceDate,
                         proof: publicCredential.proof,
-                        types: publicCredential.types,
+                        payload: publicCredential,
                         holder: holderId
                     }
                 ],
