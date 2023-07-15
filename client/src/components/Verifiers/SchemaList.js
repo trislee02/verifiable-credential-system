@@ -115,7 +115,6 @@ const SchemaList = () => {
         flexDirection: "column",
       }}
     >
-      <SetPrivateKeyForm />
       <h1 style={{ width: "100%", display: "flex", justifyContent: "center" }}>
         Your Form
       </h1>
