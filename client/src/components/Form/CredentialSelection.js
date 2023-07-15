@@ -60,7 +60,7 @@ const CredentialSelection = ({ id, onClose, open, credList, valueProp}) => {
             TransitionProps={{ onEntering: handleEntering }}
             open={open}
         >
-        <DialogTitle>Phone Ringtone</DialogTitle>
+        <DialogTitle>Choose Credential</DialogTitle>
         <DialogContent dividers>
             <RadioGroup
                 ref={radioGroupRef}
