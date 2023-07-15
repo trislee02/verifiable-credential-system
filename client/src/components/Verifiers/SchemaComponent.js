@@ -14,6 +14,7 @@ import Accordion from "@mui/material/Accordion";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { Link } from "@mui/material";
 
 const SchemaCheck = ({ check, index }) => {
   const [entries, setEntries] = useState(Object.entries(check));
@@ -30,13 +31,13 @@ const SchemaCheck = ({ check, index }) => {
             <div
               style={{ display: "flex", flexDirection: "row", width: "100%" }}
             >
-              <TextField defaultValue={entry[0]} style={{ flex: 1 }} />
-              <FormControl style={{ flex: 1 }}>
+              <TextField value={`${entry[0]}`} style={{ flex: 1 }} disabled/>
+              <FormControl style={{ flex: 1 }} disabled>
                 <Select value={entry[1][0]}>
                   <MenuItem value={entry[1][0]}>{entry[1][0]}</MenuItem>
                 </Select>
               </FormControl>
-              <TextField defaultValue={entry[1][1]} style={{ flex: 1 }} />
+              <TextField value={entry[1][1]} style={{ flex: 1 }} disabled/>
             </div>
           )
       )}
@@ -44,24 +45,29 @@ const SchemaCheck = ({ check, index }) => {
   );
 };
 
-const RequestInput = ({ index, request }) => (
-  <CardContent>
-    <div style={{ display: "flex", flexDirection: "row", width: "100%" }}>
-      <TextField
-        label="Credential index"
-        defaultValue={Number((request ?? " . ").split(".")[0]) + 1}
-        style={{ flex: 1 }}
-      />
-      <TextField
-        label="Field Name"
-        defaultValue={(request ?? " . ").split(".")[1]}
-        style={{ flex: 1 }}
-      />
-    </div>
-  </CardContent>
-);
+const RequestInput = ({ index, request }) => {
+  return(
+    <CardContent>
+      <div style={{ display: "flex", flexDirection: "row", width: "100%" }}>
+        <TextField
+          label="Credential index"
+          value={Number((request ?? " . ").split(".")[0]) + 1}
+          style={{ flex: 1 }}
+          disabled
+        />
+        <TextField
+          label="Field Name"
+          value={(request ?? " . ").split(".")[1]}
+          style={{ flex: 1 }}
+          disabled
+        />
+      </div>
+    </CardContent>
+  );
+}
 
 const SchemaComponent = ({ curSchema }) => {
+  console.log("curSchema", curSchema);
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -76,7 +82,8 @@ const SchemaComponent = ({ curSchema }) => {
         id="panel3bh-header"
       >
         <Typography sx={{ width: "33%", flexShrink: 0 }}>Form ID</Typography>
-        <Typography sx={{ color: "text.secondary" }}>{curSchema.id}</Typography>
+        {/* <Typography sx={{ color: "text.secondary" }}>{curSchema.form_id_server}</Typography> */}
+        {curSchema?.form_id_server && <Link href={`/f/${curSchema.form_id_server}`}>{`Go to form`}</Link>}
       </AccordionSummary>
       <AccordionDetails>
         <Typography variant="body1">Verifier: {curSchema.verifier}</Typography>

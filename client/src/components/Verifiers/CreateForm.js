@@ -42,6 +42,8 @@ const emptyCheckField = {
 const CreateForm = ({ onNewForm }) => {
   const user = useSelector((store) => store.authSlice.user);
   const token = useSelector((store) => store.authSlice.jwt);
+  const [issueFetch, isIssueFetching] = useFetch().slice(0, 2);
+  const [holderIdentifier, setHolderIdentifier] = useState("");
   const [formCheckFields, setFormCheckFields] = useState([
     { ...emptyCheckField },
   ]);
@@ -51,7 +53,7 @@ const CreateForm = ({ onNewForm }) => {
     message: "",
   });
 
-  const [fetcher, isFetching] = useFetch().slice(0, 2);
+  const [fetcher, isFetching, fetchingError] = useFetch().slice(0, 2);
 
   // const validateVerifierPrivateKey = (value) => {
   //   if (!value || value.trim().length === 0) {
@@ -221,19 +223,35 @@ const CreateForm = ({ onNewForm }) => {
   };
 
   const saveForm = async (fullForm) => {
-    // const responseData = await fetcher(
-    //   `${apiConstants.BASE_API_URL}/api/save-form`,
-    //   {
-    //     method: "POST",
-    //     body: fullForm,
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //       Authorization: `Bearer ${token}`,
-    //     },
-    //   }
-    // );
-    // if (!responseData) throw new Error();
+    const holder = await getHolder();
+    console.log(holder);
+    console.log(fullForm);
+
+    const responseData = await fetcher(
+      `${apiConstants.BASE_API_URL}/api/forms`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          "name": "My Form",
+          "description": "A form for people",
+          "schema": fullForm,
+          "holder": holder.id
+        }),
+        headers: {
+          "Content-Type": "application/json",
+          'Accept': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    console.log(fetchingError);
+    console.log(responseData);
+    if (fetchingError) {
+      console.log(fetchingError);
+      throw new Error();
+    }
   };
+
   // const downloadForm = () => {
   //   if (!publicCred) return;
   //   const link = document.createElement("a");
@@ -251,11 +269,26 @@ const CreateForm = ({ onNewForm }) => {
   //   verifierPrivateKey.trim().length === 0 ||
   //   formCheckFields.filter((field) => field.error).length > 0;
 
+  const getHolder = async () => {
+      const holder = await issueFetch(`${apiConstants.BASE_API_URL}/api/u?identifier=${holderIdentifier}`, {
+          headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (!holder) {
+          return null;
+      }
+      return holder;
+  }
+
   return (
     <Box
       sx={{ marginInline: "5vw", display: "flex", justifyContent: "center" }}
     >
       <Grid container spacing={2}>
+        <Grid item xs={12}>
+            <TextField 
+                value={holderIdentifier} onChange={(event) => setHolderIdentifier(event.target.value)} 
+                label="Holder's identifier" variant="filled" fullWidth required />
+        </Grid>
         <Grid item xs={12}>
           <Typography sx={{ display: "block" }}>
             Checks{" "}
