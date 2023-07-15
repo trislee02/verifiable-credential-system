@@ -172,7 +172,6 @@ const IssueOne = () => {
             body: JSON.stringify({
                 credentials: [
                     {
-                        holder: publicCredential.holderId,
                         holderPayload: publicCredential.encryptedData,
                         issuerPayload: publicCredential.encryptedDataForIssuer,
                         expirationDate: publicCredential.expirationDate,

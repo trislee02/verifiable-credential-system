@@ -98,6 +98,7 @@ const IssueMany = () => {
             if (!(expirationDate && expirationDate instanceof Date && expirationDate.toString() !== "Invalid Date")) throw new Error("Missing Expiration Date!");
 
             const holderIncludedIdentifier = includedIdentifiers[0];
+            let localPublicCredentials = [];
             for (let i = 0; i < csv.length; i++) {
                 const item = csv[i];
 
@@ -112,7 +113,7 @@ const IssueMany = () => {
                 delete credentialSubject[holderIncludedIdentifier];
                 try {
                     const publicCredential = await issue(holderIdentifier, holder.publicKey, credentialSubject);
-                    setPublicCredentials(prev => [...prev, { ...publicCredential, holderId: holder.id }]);
+                    localPublicCredentials.push({ ...publicCredential, holderId: holder.id });
 
                 } catch (error) {
                     let message = "An error occurred while issuing! Re-check your inputs and try again!";
@@ -129,9 +130,10 @@ const IssueMany = () => {
             if (!challengeReply) throw new Error('An error occurred while contacting with server! Re-login and try again!');
 
             // Save issued public credentials to server
-            await saveCredentialToServer(challengeReply);
-
-            setIssueState({ state: "success", message: JSON.stringify(publicCredentials) });
+            await saveCredentialToServer(challengeReply, localPublicCredentials);
+            
+            setPublicCredentials(localPublicCredentials);
+            setIssueState({ state: "success", message: JSON.stringify(localPublicCredentials) });
 
         } catch (error) {
             let message = "An error occurred while issuing! Re-check your inputs and try again!";
@@ -170,8 +172,8 @@ const IssueMany = () => {
         return challengeResponseData.data.challenge;
     }
 
-    const saveCredentialToServer = async (replyingChallenge) => {
-        console.log("HELLO", publicCredentials);
+    const saveCredentialToServer = async (replyingChallenge, publicCredentials) => {
+        // console.log("HELLO", publicCredentials);
         if (publicCredentials.length <= 0) return;
         const responseData = await issueFetch(`${apiConstants.BASE_API_URL}/api/credentials`, {
             method: "POST",
@@ -185,7 +187,6 @@ const IssueMany = () => {
                         expirationDate: publicCredential.expirationDate,
                         issuanceDate: publicCredential.issuanceDate,
                         proof: publicCredential.proof,
-                        types: publicCredential.types
                     }
                 }),
                 replyingChallenge: replyingChallenge
@@ -195,6 +196,7 @@ const IssueMany = () => {
                 "Authorization": `Bearer ${jwt}`
             }
         });
+        // console.log("resData", responseData);
         if (!responseData) throw new Error("Cannot save issued credentials to server!");
     }
 
@@ -219,6 +221,8 @@ const IssueMany = () => {
         });
 
     const rows = csv ? csv : [];
+
+    // console.log("public credentials", publicCredentials);
 
     return (
         <Box sx={{ marginInline: "5vw", display: "flex", justifyContent: "center" }}>
