@@ -10,6 +10,7 @@ import Typography from "@mui/material/Typography";
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import CircularProgress from "@mui/material/CircularProgress";
+import { JsonView, defaultStyles } from 'react-json-view-lite';
 import { issueVC, verifyValidVC } from "../../lib/vc_protocol";
 import { verifyKeyPair, rsaDecrypt, convertPrivateKeyToRSAKey } from "../../lib/crypto_lib";
 import { useSelector } from "react-redux";
@@ -285,7 +286,7 @@ const IssueOne = () => {
                         </Box>
                     }>
                         <AlertTitle>Issued Successfully</AlertTitle>
-                        {issueState.message}
+                        <JsonView data={JSON.parse(issueState.message)} shouldInitiallyExpand={(level) => true} style={defaultStyles} />
                     </Alert>
                 </Grid>}
                 <Grid item xs={12}>

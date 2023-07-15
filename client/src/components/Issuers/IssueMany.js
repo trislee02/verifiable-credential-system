@@ -14,6 +14,7 @@ import TableRow from "@mui/material/TableRow";
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import CircularProgress from "@mui/material/CircularProgress";
+import { JsonView, defaultStyles } from 'react-json-view-lite';
 import Papa from "papaparse";
 import { useSelector } from "react-redux";
 import useFetch from "../../hooks/useFetch";
@@ -102,6 +103,7 @@ const IssueMany = () => {
 
                 // Check holder existence
                 const holderIdentifier = item[holderIncludedIdentifier];
+                if (!holderIdentifier) continue;
                 const holder = await getHolder(holderIdentifier);
                 if (!holder) throw new Error(`Row #${i}: HOLDER ${holderIdentifier} DOES NOT EXIST`);
 
@@ -288,7 +290,7 @@ const IssueMany = () => {
                         </Box>
                     }>
                         <AlertTitle>Issued Successfully</AlertTitle>
-                        {issueState.message}
+                        <JsonView data={JSON.parse(issueState.message)} shouldInitiallyExpand={(level) => true} style={defaultStyles} />
                     </Alert>
                 </Grid>}
                 <Grid item xs={12}>
